@@ -6,7 +6,7 @@ def displayLinearRegression(x: float, y: float, theta0: float, theta1: float) ->
 	linearRegression = theta0 + (theta1 * x)
 	plt.plot(x, linearRegression, color='red')
 
-def predictPrice(data: pd.core.frame.DataFrame) -> int:
+def estimatePrice(data: pd.core.frame.DataFrame) -> int:
 	x = data['km']
 	y = data['price']
 	n = len(x)

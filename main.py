@@ -1,4 +1,4 @@
-from leastSquareEstimation import predictPrice
+from leastSquareEstimation import estimatePrice
 from load_csv import load
 from matplotlib import pyplot as plt
 
@@ -10,9 +10,9 @@ def main():
 	except ValueError:
 		print("Type Error")
 		exit(1)
-	theta = predictPrice(data)
-	estimatePrice = theta[0] + (theta[1] * mileage)
-	print(f"estimatePrice({mileage}) = {theta[0]:2f} + ({theta[1]:2f} ∗ {mileage}) = {estimatePrice:2f}")
+	theta = estimatePrice(data)
+	price = theta[0] + (theta[1] * mileage)
+	print(f"estimatePrice({mileage}) = {theta[0]:2f} + ({theta[1]:2f} ∗ {mileage}) = {price:2f}")
 	plt.show()
 	return 0
 
