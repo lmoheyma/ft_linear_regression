@@ -1,7 +1,6 @@
-from leastSquareEstimation import estimatePrice
 from load_csv import load
 import pandas as pd
-
+from matplotlib import pyplot as plt
 
 class LinearRegression:
 	def __init__(self) -> None:
@@ -10,13 +9,23 @@ class LinearRegression:
 		self.data = load("data.csv")
 		self.dataMileages = self.data['km']
 		self.dataPrices = self.data['price']
-		self.scaledMileages = self.scaledMileages()
-	
-	def scaledMileages(self):
-		N = len(self.data)
-		meanMileages = sum(self.dataMileages) / N
-		stdDeviation = (sum([(mileage - meanMileages)**2 for mileage in self.dataMileages]) / N)**0.5
-		return [(mileage - meanMileages) / stdDeviation for mileage in self.dataMileages]
+		self.normalizedData = self.normalizeData()
+
+
+	def normalizeData(self):
+		def normalizeSerie(serie: pd.core.frame.DataFrame):
+			minimum = serie.min()
+			return (serie - minimum) / (serie.max() - minimum)
+		return pd.DataFrame({'km': normalizeSerie(self.dataMileages), 'price': normalizeSerie(self.dataPrices)})
+
+
+	def denormalizeData(self, t0, t1):
+			minM = self.dataMileages.min()
+			maxM = self.dataMileages.max()
+			minP = self.dataPrices.min()
+			maxP = self.dataPrices.max()
+			return t0 * (maxP - minP) + minP + (t1 * minM * (minP - maxP)) / (maxM - minM), t1 * (maxP - minP) / (maxM - minM)
+			
 
 
 	def estimatePrice(self, theta0, theta1, mileage) -> float:
@@ -29,33 +38,50 @@ class LinearRegression:
 
 
 	def lossFunction(self):
-		errors0 = []
-		errors1 = []
+		sumError0 = 0
+		sumError1 = 0
 		m = len(self.data)
 		
 		for i in range(m):
-			estimatePrice = estimatePrice(self.theta0, self.theta1, self.scaledMileages[i])
-			errors0.append(abs(estimatePrice - self.scaledMileages[i]))
-			errors1.append(abs(estimatePrice - self.scaledMileages[i]) * self.dataPrices[i])
-		return sum(errors0) / m, sum(errors1) / m
+			estimatePrice = self.estimatePrice(self.theta0, self.theta1, self.normalizedData['km'][i])
+			sumError0 += estimatePrice - self.normalizedData['price'][i]
+			sumError1 += (estimatePrice - self.normalizedData['price'][i]) * self.normalizedData['km'][i]
+		return sumError0, sumError1
 
 	def gradientDescent(self, alpha: float):
-		epochs = 500
-		for i in range(epochs):
-			mae0, mae1 = self.lossFunction()
-			self.theta0 -= alpha * mae0
-			self.theta1 -= alpha * mae1
+		plt.scatter(self.normalizedData['km'], self.normalizedData['price'])
+		plt.xlabel("Kilometers")
+		plt.ylabel("Prices")
+		plt.title("Plot")
+
+		m = len(self.data)
+		while(True):
+			tmpTheta0 = self.theta0
+			tmpTheta1 = self.theta1
+
+			error0, error1 = self.lossFunction()
+			self.theta0 -= alpha * 1 / m * error0
+			self.theta1 -= alpha * 1 / m * error1
+
+			if (tmpTheta0 == self.theta0 and tmpTheta1 == self.theta1):
+				break
 		print(self.theta0, self.theta1)
+		
+		price0 = self.estimatePrice(self.theta0, self.theta1, 0)
+		price1 = self.estimatePrice(self.theta0, self.theta1, 1)
+		plt.plot([0, 1], [price0, price1], color='red')
+
+		plt.show()
 
 
-	def linearRegression(data):
+	def linearRegression(self):
 		mileage = input("Mileage: ")
 		try:
 			mileage = float(mileage)
 		except ValueError:
 			print("Type Error")
 			exit(1)
-		theta = [data['km'][0], data['price'][0]]
+		theta = [self.data['km'][0], self.data['price'][0]]
 		price = theta[0] + (theta[1] * mileage)
 		print(f"estimatePrice({int(mileage)}) = {theta[0]:.2f} + ({theta[1]:.2f} ∗ {mileage}) = {price:.2f}")
 		# plt.show()
@@ -64,5 +90,5 @@ class LinearRegression:
 if __name__ == "__main__":
 	linearRegression = LinearRegression()
 	linearRegression.linearRegression()
-	linearRegression.gradientDescent(0.5)
+	linearRegression.gradientDescent(0.1)
 
