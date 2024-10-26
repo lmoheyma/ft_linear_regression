@@ -77,8 +77,21 @@ class LinearRegression:
 		print(f"Price after training: {self.estimatePrice(self.theta0, self.theta1, self.mileage):.2f}")
 		plt.plot([0, 1], [price0, price1], color='red')
 		self.saveThetas()
+		self.calculatePrecision()
 		plt.show()
 		
+
+	def calculatePrecision(self):
+		y = self.dataPrices
+		pred = []
+		for i in range(0, len(y)):
+			estimatePrice = self.estimatePrice(self.theta0, self.theta1, self.dataMileages[i])
+			pred.append(estimatePrice)
+		u = (( y - pred)**2).sum()
+		v = (( y - y.mean())**2).sum()
+		precision = 1 - (u / v)
+		print(f"Precision: {precision*100:.2f}%")
+
 
 	def linearRegression(self):
 		mileage = input("Mileage: ")
@@ -103,6 +116,7 @@ class LinearRegression:
 				json.dump(data, outfile)
 		except Exception:
 			print("File Error: Can't save thetas")
+
 
 if __name__ == "__main__":
 	linearRegression = LinearRegression()
