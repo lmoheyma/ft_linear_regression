@@ -16,7 +16,11 @@ def predictPrice():
 		print("Type Error")
 		exit(1)
 	data = loadThetas()
-	theta = [data['theta0'], data['theta1']]
+	try:
+		theta = [data['theta0'], data['theta1']]
+	except KeyError:
+		print("Error: Wrong data")
+		return
 	price = theta[0] + (theta[1] * mileage)
 	print(f"estimatePrice({int(mileage)}) = {theta[0]:.2f} + ({theta[1]:.2f} ∗ {mileage}) = {price:.2f}")
 
