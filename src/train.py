@@ -8,7 +8,7 @@ class LinearRegression:
 		self.mileage = 0
 		self.theta0 = 0.0
 		self.theta1 = 0.0
-		self.data = load("data.csv")
+		self.data = load("../data.csv")
 		self.dataMileages = self.data['km']
 		self.dataPrices = self.data['price']
 		self.normalizedData = self.normalizeData()
@@ -108,7 +108,7 @@ class LinearRegression:
 
 	def saveThetas(self):
 		try:
-			with open('thetas.json', 'w') as outfile:
+			with open('../thetas.json', 'w') as outfile:
 				data = {
 					"theta0": self.theta0,
 					"theta1": self.theta1
