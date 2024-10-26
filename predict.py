@@ -6,6 +6,7 @@ def loadThetas():
 			return json.load(outfile)
 	except Exception:
 		print("File Error: Can't save thetas")
+		exit(1)
 
 def predictPrice():
 	mileage = input("Mileage: ")
