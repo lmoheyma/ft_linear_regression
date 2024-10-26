@@ -1,7 +1,7 @@
 from load_csv import load
 import pandas as pd
 from matplotlib import pyplot as plt
-import time
+import json
 
 class LinearRegression:
 	def __init__(self) -> None:
@@ -54,7 +54,7 @@ class LinearRegression:
 		plt.scatter(self.normalizedData['km'], self.normalizedData['price'])
 		plt.xlabel("Kilometers")
 		plt.ylabel("Prices")
-		plt.title("Plot")
+		plt.title("Linear Regression")
 		i=0
 		m = len(self.data)
 
@@ -74,10 +74,10 @@ class LinearRegression:
 		price0 = self.estimatePrice(self.theta0, self.theta1, 0)
 		price1 = self.estimatePrice(self.theta0, self.theta1, 1)
 		self.theta0, self.theta1 = self.denormalizeData()
-		print(self.estimatePrice(self.theta0, self.theta1, self.mileage))
+		print(f"Price after training: {self.estimatePrice(self.theta0, self.theta1, self.mileage):.2f}")
 		plt.plot([0, 1], [price0, price1], color='red')
+		self.saveThetas()
 		plt.show()
-		print(self.theta0, self.theta1)
 		
 
 	def linearRegression(self):
@@ -90,8 +90,19 @@ class LinearRegression:
 		theta = [self.data['km'][0], self.data['price'][0]]
 		price = theta[0] + (theta[1] * self.mileage)
 		print(f"estimatePrice({int(self.mileage)}) = {theta[0]:.2f} + ({theta[1]:.2f} ∗ {self.mileage}) = {price:.2f}")
-		# plt.show()
 		return price
+	
+
+	def saveThetas(self):
+		try:
+			with open('thetas.json', 'w') as outfile:
+				data = {
+					"theta0": self.theta0,
+					"theta1": self.theta1
+				}
+				json.dump(data, outfile)
+		except Exception:
+			print("File Error: Can't save thetas")
 
 if __name__ == "__main__":
 	linearRegression = LinearRegression()

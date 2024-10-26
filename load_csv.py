@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 def load(path: str) -> pd.core.frame.DataFrame:
     """
     Takes a path as argument, writes the dimensions of the data set
@@ -13,6 +12,3 @@ def load(path: str) -> pd.core.frame.DataFrame:
         exit(1)
     print(f"Loading dataset of dimensions {data.shape}")
     return data
-
-def getThetas(data: pd.core.frame.DataFrame) -> list:
-    return
